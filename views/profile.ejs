@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class = 'w-full min-h-screen bg-zinc-900 text-white'>
+        <a href="/logout" class="absolute top-5 right-5 px-3 py-2 rounded-md bg-red-500">Logout</a>
+        <h3 class="text-3xl p-3"><span class="font-light">Hello</span>, <%=user.name%> </h3>
+        <h5>You can create a New Post</h5>
+        <form method="post" action="/post">
+            <textarea class="resize-none w-full h-32 bg-transparent text-white border-2 border-zinc-800 rounded-md mt-5" placeholder="Write your post here..." name="content"></textarea>
+            <input type="submit" class="px-5 py-2 rounded-md bg-blue-500 mt-3" value="Create Post">
+        </form>
+        <div class="posts mt-20">
+            <h3 class="text-xl text-zinc-400">Your Posts</h3>
+            <div class="postcontainer ">
+                <% user.posts.forEach(function(post){ %>
+                 
+                 <div class = "post w-1/2 bg-zinc-800 rounded-md p-3 mt-5">
+                    <h3 class="text-blue-500 mb-2">@ <%= user.username%></h3>
+                    <p class="text-sm text-zinc-400"><%= post.content %></p>
+                    <div class="flex justify-between mt-5">
+                        <span class="text-sm text-zinc-400">Date</span>
+                        <a href="#" class="text-sm text-red-500">Delete</a>
+                    </div>
+                    <div class="btns flex justify-between ">
+                        <a href="#" class="px-3 py-2 rounded-md ">Edit</a>
+                        <a href="#" class="px-3 py-2 rounded-md ">Like</a>
+                    </div>
+
+                </div>
+
+              <% }) %>
+                </div>
+                
+            </div>
+
+
+        </div>
+        
+    </div>
+</body>
+</html>
