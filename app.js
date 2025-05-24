@@ -19,12 +19,37 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
     res.render('login');
     });
-app.get('/profile',isLoggnedIn, async(req, res) => {
+
+app.get('/profile',isLoggedIn, async(req, res) => {
    let user= await userModel.findOne({email: req.user.email}).populate("posts"); //will show what's written / if won't use populate the field will remain empty
    
     res.render('profile', {user});
     });
-app.post('/post',isLoggnedIn, async(req, res) => {                        //hmseha post tbhi hoga jab apn logged in honge
+
+app.get('/like/:id',isLoggedIn, async(req, res) => {
+   let post= await postModel.findOne({_id: req.params.id}).populate("user");
+    if(post.likes.indexOf(req.user.userid) === -1){  // user id isn't present in the like array
+         post.likes.push(req.user.userid); // like badha dega 
+    }
+    else{
+        post.likes.splice(post.likes.indexOf(req.user.userid), 1);   // agar user id like array mai hai to use hata dega 
+    }
+   await post.save(); //save the post
+   res.redirect('/profile');
+});
+
+app.get('/edit/:id',isLoggedIn, async(req, res) => {
+   let post= await postModel.findOne({_id: req.params.id}).populate("user");  //post dundha h edit krne kae liye
+   res.render('edit',{post}); //post ko edit page par bhej diya
+   
+});
+app.post('/update/:id',isLoggedIn, async(req, res) => {
+   let post= await postModel.findOneAndUpdate({_id: req.params.id},{content : req.body.content})   
+   res.redirect("/profile");
+   
+});
+
+app.post('/post', isLoggedIn, async(req, res) => {                        //hmseha post tbhi hoga jab apn logged in honge
    let user= await userModel.findOne({email: req.user.email});
    let {content} = req.body;
     let post =  await postModel.create({
@@ -61,6 +86,7 @@ app.post('/register', async(req, res) => {
         })
 
 });
+
 app.post('/login', async(req, res) => {
  let {email, password}= req.body; 
 
@@ -87,7 +113,7 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
     });
     // MiddleWare to check if user is logged in (protecting the route)
-function isLoggnedIn(req, res, next) {
+function isLoggedIn(req, res, next) {
     if (!req.cookies.token || req.cookies.token === "") {
         return res.send("You must be logged in");
     }
